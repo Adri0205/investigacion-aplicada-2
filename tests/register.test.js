@@ -1,13 +1,8 @@
-// src/test/register.test.js
 const request = require('supertest');
-const app = require("../src/register");
+const app = require("../src/app");
 
-describe('POST /api/register - Caso de prueba 1: Verificar el registro de usuario', () => {
-  beforeEach(() => {
-    // limpiar "DB" en memoria antes de cada test
-    app.users.length = 0;
-    app.tokens.clear();
-  });
+describe('Caso de prueba 1: Verificar el registro de usuario', () => {
+  
 
   test('Debería registrar un usuario correctamente y devolver 201 y datos (sin password)', async () => {
     const res = await request(app)
@@ -25,7 +20,7 @@ describe('POST /api/register - Caso de prueba 1: Verificar el registro de usuari
     expect(res.body.user).toHaveProperty('id');
     expect(res.body.user).toHaveProperty('username', 'nuevo_usuario');
     expect(res.body.user).toHaveProperty('email', 'correo@ejemplo.com');
-    expect(res.body.user).not.toHaveProperty('password'); // no debe incluir el hash
+    expect(res.body.user).not.toHaveProperty('password');
   });
 
   test('Registro con campos faltantes devuelve 400', async () => {

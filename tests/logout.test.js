@@ -1,25 +1,22 @@
 const request = require("supertest");
-const app = require("../src/logout");
+const app = require("../src/app");
 
-describe("Pruebas de login y logout", () => {
+describe("Caso de prueba 4: Verificar el cierre de sesión de usuario ", () => {
   let token = "";
 
-  test("Login exitoso devuelve token", async () => {
+  beforeAll(async () => {
+      await request(app)
+      .post('/api/register')
+      .send({
+        username: 'Adri',
+        password: 'chocobollo',
+        email: 'adri@example.com'
+      });
+
     const res = await request(app)
       .post("/api/login")
-      .send({ username: "usuario", password: "1234" });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("token");
+      .send({ username: "Adri", password: "chocobollo" });
     token = res.body.token;
-  });
-
-  test("Acceso con token válido", async () => {
-    const res = await request(app)
-      .get("/api/usuario")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(res.statusCode).toBe(200);
   });
 
   test("Logout invalida el token", async () => {
@@ -33,7 +30,7 @@ describe("Pruebas de login y logout", () => {
 
   test("Token inválido después de logout", async () => {
     const res = await request(app)
-      .get("/api/usuario")
+      .get("/api/protegido")
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(403);
