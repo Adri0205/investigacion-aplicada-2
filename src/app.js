@@ -32,4 +32,26 @@ app.post('/api/login', async (req, res) => {
   return res.status(200).json({ token });
 });
 
+function verificarToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Token requerido' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  const secret = process.env.JWT_SECRET || 'devsecret';
+
+  try {
+    jwt.verify(token, secret); // valida el token
+    next();
+  } catch (err) {
+    return res.status(403).json({ error: 'Token inválido' });
+  }
+}
+
+// GET /api/protected-resource Caso de prueba 3
+app.get('/api/protected-resource', verificarToken, (req, res) => {
+  res.status(200).json({ data: 'Este es el recurso protegido' });
+});
+
 module.exports = app;
